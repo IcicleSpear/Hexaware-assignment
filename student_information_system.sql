@@ -172,79 +172,79 @@ course. Use a JOIN operation between the "Courses" table and the "Enrollments" t
                 group by s.student_id,c.course_name;
  
 
-5. Create a query to list the names of teachers and the courses they are assigned to. Join the "Teacher" table with the "Courses" table.
+/*5. Create a query to list the names of teachers and the courses they are assigned to. Join the "Teacher" table with the "Courses" table.*/
    select t.first_name,t.last_name,course_id 
 			from Teacher t inner join Courses c on t.teacher_id=c.teacher_id;
  
-6. Retrieve a list of students and their enrollment dates for a specific course. You'll need to join the "Students" table with the "Enrollments" and "Courses" tables.
+/*6. Retrieve a list of students and their enrollment dates for a specific course. You'll need to join the "Students" table with the "Enrollments" and "Courses" tables.*/
    select concat(s.first_name,' ',s.last_name) as student_name,e.enrollment_date,c.course_name 
 		from Students s inner join Enrollments e on s.student_id=e.student_id
  		inner join Courses c on c.course_id=e.course_id where c.course_name='Data Structures';
  
 
-7. Find the names of students who have not made any payments. Use a LEFT JOIN between the
-   "Students" table and the "Payments" table and filter for students with NULL payment records.
+/*7. Find the names of students who have not made any payments. Use a LEFT JOIN between the
+   "Students" table and the "Payments" table and filter for students with NULL payment records.*/
    select concat(s.first_name,' ',s.last_name) as student_name 
 	from Students s left join Payments p on s.student_id=p.student_id where p.payment_id is null;
  
-8. Write a query to identify courses that have no enrollments. You'll need to use a LEFT JOIN
+/*8. Write a query to identify courses that have no enrollments. You'll need to use a LEFT JOIN
    between the "Courses" table and the "Enrollments" table and filter for courses with NULL
-   enrollment records.
+   enrollment records.*/
    select c.course_id,c.course_name from Courses c left join Enrollments e on c.course_id=e.course_id where      e.enrollment_id is null;
  
-9. Identify students who are enrolled in more than one course. Use a self-join on the "Enrollments"
+/*9. Identify students who are enrolled in more than one course. Use a self-join on the "Enrollments"
    table to find students with multiple enrollment records.
-SELECT DISTINCT e1.student_id FROM Enrollments e1 JOIN Enrollments e2 ON e1.student_id =          e2.student_id AND e1.course_id <> e2.course_id;
+SELECT DISTINCT e1.student_id FROM Enrollments e1 JOIN Enrollments e2 ON e1.student_id =  e2.student_id AND e1.course_id <> e2.course_id;*/
  
-10. Find teachers who are not assigned to any courses. Use a LEFT JOIN between the "Teacher"
-    table and the "Courses" table and filter for teachers with NULL course assignments.
+/*10. Find teachers who are not assigned to any courses. Use a LEFT JOIN between the "Teacher"
+    table and the "Courses" table and filter for teachers with NULL course assignments.*/
     select t.first_name from Teacher t left join Courses c on t.teacher_id=c.teacher_id where c.course_id is null;
  
-TASK 4 : Subquery and its type
+/*TASK 4 : Subquery and its type*/
 
-1. Write an SQL query to calculate the average number of students enrolled in each course. Use
-   aggregate functions and subqueries to achieve this.
+/*1. Write an SQL query to calculate the average number of students enrolled in each course. Use
+   aggregate functions and subqueries to achieve this.*/
    select avg(student_count) from (
 		select course_id,count(student_id) as student_count from Enrollments group by course_id
                 ) as course_count;
  
-2. Identify the student(s) who made the highest payment. Use a subquery to find the maximum
-   payment amount and then retrieve the student(s) associated with that amount.
+/*2. Identify the student(s) who made the highest payment. Use a subquery to find the maximum
+   payment amount and then retrieve the student(s) associated with that amount.*/
 select * from Students where student_id in(select student_id from Payments where amount=(select max(amount) from Payments));
  
 
-3. Retrieve a list of courses with the highest number of enrollments. Use subqueries to find the
-   course(s) with the maximum enrollment count.
+/*3. Retrieve a list of courses with the highest number of enrollments. Use subqueries to find the
+   course(s) with the maximum enrollment count.*/
    select * from Courses where course_id in(
 			select course_id from(select course_id,count(*) as enrollment_count from Enrollments group by course_id) as CourseCount
 		        where enrollment_count=(select max(enrollment_count) from (select count(*) as enrollment_count from Enrollments group by course_id) as EnrollmentCount));
  
-4. Calculate the total payments made to courses taught by each teacher. Use subqueries to sum
-   payments for each teacher's courses.
+/*4. Calculate the total payments made to courses taught by each teacher. Use subqueries to sum
+   payments for each teacher's courses.*/
    select t.teacher_id,concat(t.first_name,' ',t.last_name),(select max(p.amount) from Payments p where p.student_id in (select e.student_id from Enrollments e where e.course_id in(select c.course_id from Courses c where c.teacher_id=t.teacher_id) ) as total_payment from Teacher t;
  
 
-5. Identify students who are enrolled in all available courses. Use subqueries to compare a
-   student's enrollments with the total number of courses.
+/*5. Identify students who are enrolled in all available courses. Use subqueries to compare a
+   student's enrollments with the total number of courses.*/
    select s.student_id,s.first_name,s.last_name from Students s where (select count(*) from Enrollments e where e.student_id=s.student_id)=(select count(*) from Courses);
  
 
-6. Retrieve the names of teachers who have not been assigned to any courses. Use subqueries to
-   find teachers with no course assignments.
+/*6. Retrieve the names of teachers who have not been assigned to any courses. Use subqueries to
+   find teachers with no course assignments.*/
    select t.teacher_id,t.first_name,t.last_name from Teacher t where t.teacher_id not in (select distinct teacher_id from Courses where teacher_id is not null);
  
 
-7. Calculate the average age of all students. Use subqueries to calculate the age of each student
-   based on their date of birth.
+/*7. Calculate the average age of all students. Use subqueries to calculate the age of each student
+   based on their date of birth.*/
    select avg(student_age) from(select student_id,timestampdiff(year,date_of_birth,CURDATE()) as student_age from Students)as AGE;
  
 
-8. Identify courses with no enrollments. Use subqueries to find courses without enrollment
-   records.
+/*8. Identify courses with no enrollments. Use subqueries to find courses without enrollment
+   records.*/
    select c.course_id,c.course_name from Courses c where c.course_id not in (select distinct course_id from Enrollments where course_id is not null);
  
-9. Calculate the total payments made by each student for each course they are enrolled in. Use
-   subqueries and aggregate functions to sum payments.
+/*9. Calculate the total payments made by each student for each course they are enrolled in. Use
+   subqueries and aggregate functions to sum payments.*/
    select student_id,
 		(select first_name from Students s where s.student_id=e.student_id) as first_name,
 		(select last_name from Students s where s.student_id=e.student_id) as last_name,
@@ -252,23 +252,23 @@ select * from Students where student_id in(select student_id from Payments where
 		(select sum(amount) from Payments p where p.student_id=e.student_id) as fees_paid from Enrollments e;
  
 
-10. Identify students who have made more than one payment. Use subqueries and aggregate
-    functions to count payments per student and filter for those with counts greater than one.
+/*10. Identify students who have made more than one payment. Use subqueries and aggregate
+    functions to count payments per student and filter for those with counts greater than one.*/
     select student_id,first_name,last_name from Students where student_id in(select student_id from Payments group by student_id having count(payment_id)>1);
  
 
-11. Write an SQL query to calculate the total payments made by each student. Join the "Students"
-    table with the "Payments" table and use GROUP BY to calculate the sum of payments for each student.
+/*11. Write an SQL query to calculate the total payments made by each student. Join the "Students"
+    table with the "Payments" table and use GROUP BY to calculate the sum of payments for each student.*/
     select s.student_id,s.first_name,s.last_name,sum(p.amount) from Students s join Payments p on s.student_id=p.student_id group by s.student_id;
  
 
-12. Retrieve a list of course names along with the count of students enrolled in each course. Use
-    JOIN operations between the "Courses" table and the "Enrollments" table and GROUP BY to count enrollments.
+/*12. Retrieve a list of course names along with the count of students enrolled in each course. Use
+    JOIN operations between the "Courses" table and the "Enrollments" table and GROUP BY to count enrollments.*/
     select c.*,count(e.student_id) as student_count from Courses c left join Enrollments e on c.course_id=e.course_id group by c.course_id;
  
 
-13. Calculate the average payment amount made by students. Use JOIN operations between the
-    "Students" table and the "Payments" table and GROUP BY to calculate the average.
+/*13. Calculate the average payment amount made by students. Use JOIN operations between the
+    "Students" table and the "Payments" table and GROUP BY to calculate the average.*/
     select s.first_name,s.last_name,s.student_id,avg(p.amount) from Students s left join Payments p on s.student_id=p.student_id group by s.student_id;   
  
 
