@@ -1,6 +1,7 @@
 ASSIGNMENT - Student Information System (SIS)
 J502 Abhishek.A.G
-CREATION OF DATABASE AND TABLES
+/*CREATION OF DATABASE AND TABLES*/
+
 create database SISDB;
 use SISDB;
 
@@ -39,16 +40,9 @@ create table Payments(
             payment_date date,
             foreign key (student_id) references Students(student_id));
 
-DATABASE DESCRIPTION :
- 
 
-TABLE DESCRIPTION : 
- 
- 
- 
- 
- 
-Insertion Of Data
+
+/*Insertion Of Data*/
 
 INSERT INTO Students (first_name, last_name, date_of_birth, email, phone_number) VALUES
 ('Amit', 'Sharma', '2000-05-14', 'amit.sharma@gmail.com', '9876543210'),
@@ -118,61 +112,61 @@ INSERT INTO Payments (student_id, amount, payment_date) VALUES
 
 TASK 2 : Select, Where, Between, AND, LIKE 
 
-1. Write an SQL query to insert a new student into the "Students" table with the following details:
+/*1. Write an SQL query to insert a new student into the "Students" table with the following details:
 		a. First Name: John
 		b. Last Name: Doe
 		c. Date of Birth: 1995-08-15
 		d. Email: john.doe@example.com
-		e. Phone Number: 1234567890
-insert into Students (first_name,last_name,date_of_birth,email,phone_number)      values('John','Doe','1995-08-15','john.doe@example.com','1234567890');
+		e. Phone Number: 1234567890*/
+insert into Students (first_name,last_name,date_of_birth,email,phone_number) values('John','Doe','1995-08-15','john.doe@example.com','1234567890');
 
-2. Write an SQL query to enroll a student in a course. Choose an existing student and course and insert a record into the "Enrollments" table with the enrollment date.
+/*2. Write an SQL query to enroll a student in a course. Choose an existing student and course and insert a record into the "Enrollments" table with the enrollment date.*/
    insert into Enrollments(student_id,course_id,enrollment_date) values(2,5,'2025-03-18');
 
-3. Update the email address of a specific teacher in the "Teacher" table. Choose any teacher and modify their email address
+/*3. Update the email address of a specific teacher in the "Teacher" table. Choose any teacher and modify their email address*/
    update Teacher set email='thisisupdateemail@gmail.com' where teacher_id=4;
 
-4. Write an SQL query to delete a specific enrollment record from the "Enrollments" table. Select an enrollment record based on the student and course.
+/*4. Write an SQL query to delete a specific enrollment record from the "Enrollments" table. Select an enrollment record based on the student and course.*/
    delete from Enrollments where student_id=6 and course_id=6;
 
 
-5. Update the "Courses" table to assign a specific teacher to a course. Choose any course and teacher from the respective tables.
+/*5. Update the "Courses" table to assign a specific teacher to a course. Choose any course and teacher from the respective tables.*/
    update Courses set teacher_id=2 where course_id=3;
 
-6. Delete a specific student from the "Students" table and remove all their enrollment records from the "Enrollments" table. Be sure to maintain referential integrity.
+/*6. Delete a specific student from the "Students" table and remove all their enrollment records from the "Enrollments" table. Be sure to maintain referential integrity.*/
    delete from Enrollments where student_id=7;
    delete FROM Payments WHERE student_id = 7;
    delete from Students where student_id=7;
 
 
-7. Update the payment amount for a specific payment record in the "Payments" table. Choose any payment record and modify the payment amount.
+/*7. Update the payment amount for a specific payment record in the "Payments" table. Choose any payment record and modify the payment amount.*/
    update Payments set amount=20000 where payment_id=6;
 
 TASK 3 : Aggregate functions, Having, Order By, GroupBy and Joins
-1. Write an SQL query to calculate the total payments made by a specific student. 
-   You will need to join the "Payments" table with the "Students" table based on the student's ID.
+/*1. Write an SQL query to calculate the total payments made by a specific student. 
+   You will need to join the "Payments" table with the "Students" table based on the student's ID.*/
    select s.student_id,concat(first_name,' ',last_name) as student_name,sum(p.amount) as total_payment
 		from Students s inner join Payments p on s.student_id=p.student_id 
             		where s.student_id=5 group by s.student_id,student_name;
 
  
 
-2. Write an SQL query to retrieve a list of courses along with the count of students enrolled in each
-course. Use a JOIN operation between the "Courses" table and the "Enrollments" table.
+/*2. Write an SQL query to retrieve a list of courses along with the count of students enrolled in each
+course. Use a JOIN operation between the "Courses" table and the "Enrollments" table.*/
    select c.course_name,count(e.student_id) 
 			from Courses c inner join Enrollments e on c.course_id=e.course_id 
 			group by c.course_id,c.course_name;
  
-3. Write an SQL query to find the names of students who have not enrolled in any course. Use a
+/*3. Write an SQL query to find the names of students who have not enrolled in any course. Use a
    LEFT JOIN between the "Students" table and the "Enrollments" table to identify students
-   without enrollments.
+   without enrollments.*/
    select s.student_id,concat(s.first_name,' ',s.last_name) as student_name
 	         from Students s left join Enrollments e on s.student_id=e.student_id
                         where e.student_id is NULL;
  
 
-4. Write an SQL query to retrieve the first name, last name of students, and the names of the courses they   are enrolled in. Use JOIN operations between the "Students" table and the "Enrollments" and "Courses" tables.
-   select s.first_name,s.last_name,c.course_name 
+/*4. Write an SQL query to retrieve the first name, last name of students, and the names of the courses they   are enrolled in. Use JOIN operations between the "Students" table and the "Enrollments" and "Courses" tables.
+   select s.first_name,s.last_name,c.course_name */
 		from Students s inner join Enrollments e on s.student_id=e.student_id 
                 inner join Courses c on e.course_id=c.course_id
                 group by s.student_id,c.course_name;
